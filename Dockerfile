@@ -1,18 +1,14 @@
-FROM node:18
+FROM nginx:stable-alpine
 
-WORKDIR /app
+# Remove default content
+RUN rm -rf /usr/share/nginx/html/*
 
-COPY package*.json ./
+# Copy static files
+COPY . /usr/share/nginx/html
 
-# Install dependencies
-RUN npm install
-
-COPY . .
-
-# Set the PORT environment variable
-ENV PORT=4000
+# Update nginx to listen on 4000 instead of 80
+RUN sed -i 's/listen       80;/listen 4000;/g' /etc/nginx/conf.d/default.conf
 
 EXPOSE 4000
 
-CMD ["npm", "start"]
-
+CMD ["nginx", "-g", "daemon off;"]
